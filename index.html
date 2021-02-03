@@ -3,43 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="assets/js/script.js"></script>
     <title>Taschenrechner</title>
 </head>
 <body>
-<section>
-    <input class="col-1-4" id="input" placeholder="Input" >
-</section>
-<section>
-    <div class="row">
-        <button class="col-1" id="AC">  AC</button>
-        <button class="col-2" id="%">   %</button>
-        <button class="col-3" id="+/-"> +/-</button>
-        <button class="col-4" id="/">   /</button>
-    </div>
-    <div class="row">
-        <button class="col-1" id="7">7</button>
-        <button class="col-2" id="8">8</button>
-        <button class="col-3" id="9">9</button>
-        <button class="col-4" id="*">*</button>
-    </div>
-    <div class="row">
-        <button class="col-1" id="4">4</button>
-        <button class="col-2" id="5">5</button>
-        <button class="col-3" id="6">6</button>
-        <button class="col-4" id="+">+</button>
-    </div>
-    <div class="row">
-        <button class="col-1" id="1">1</button>
-        <button class="col-2" id="2">2</button>
-        <button class="col-3" id="3">3</button>
-        <button class="col-4" id="-">-</button>
-    </div>
-    <div class="row">
-        <button class="col-1" id="0">   0</button>
-        <button class="col-2" id="00">  00</button>
-        <button class="col-3" id=".">   .</button>
-        <button class="col-4" id="=">   =</button>
-    </div>
-</section>
+<script type="text/javascript">
+    /*
+    * ()(); instead of
+    * var method = function (){}
+    * method();
+    * */
+    (function (){
+
+        var calc = document.createElement('div');
+        calc.style.top = '0';
+        calc.style.left = '0';
+        calc.style.position = 'absolute';
+        calc.style.width = 4 * 50 + 'px';
+        calc.style.height = 5 * 50 + 'px';
+        document.body.appendChild(calc);
+
+        var input = document.createElement('input');
+        input.id = 'input';
+        var style = input.style;
+        style.width = '100%';
+        style.height = '50px';
+        style.border = 'none';
+        style.fontSize = '20px';
+        style.padding = '6px';
+        style.boxSizing = 'border-box';
+        style.textAlign = 'right';
+        input.setAttribute('placeholder', 'Input');
+        calc.appendChild(input);
+
+        function calculate()
+        {
+            var values = [];
+            var operators = [];
+            var termCount = 0;
+            var opsCount = 0;
+            var character = "";
+
+            for (var i = 0; i < input.value.length; i++) {
+                character = input.value.charAt(i);
+
+                if (parseInt(character) || character === ".") {
+                    if(values[termCount] !== undefined) {
+                        values[termCount] += String(character);
+                    }
+                    else {
+                        values[termCount] = String(character);
+                    }
+                }
+                else {
+                    termCount++;
+                    operators[opsCount] = character;
+                    opsCount++;
+                }
+            }
+
+            for (var j = 0; j < operators.length; j++)
+            {
+                switch (operators[j])
+                {
+                    case "+":
+                        values[1] = parseFloat(values[0]) + parseFloat(values[1]);
+                        break;
+                    case "-":
+                        values[1] = parseFloat(values[0]) - parseFloat(values[1]);
+                        break;
+                    case "*":
+                        values[1] = parseFloat(values[0]) * parseFloat(values[1]);
+                        break;
+                    case "/":
+                        values[1] = parseFloat(values[0]) / parseFloat(values[1]);
+                        break;
+                }
+                operators.shift();
+                values.shift();
+                if (values.length ===1)
+                {
+                    input.value = values[0];
+                    return ;
+                }
+            }
+        }
+
+        function handleClick()
+        {
+            switch (this.innerText)
+            {
+                case 'AC':
+                    input.value = '';
+                    break;
+                case '+/-':
+                    input.value += '^-1';
+                    break;
+                case '=':
+                    calculate();
+                    break;
+
+
+                default:
+                    input.value += this.innerText;
+                    break;
+            }
+        }
+
+        var buttons = [
+            'AC', '%', '+/-', '/',
+            '7', '8', '9', '*',
+            '4', '5', '6', '+',
+            '1', '2', '3', '-',
+            '0', '00', '.', '='
+        ];
+
+        for (var i = 0; i < buttons.length; i++)
+        {
+            var button = document.createElement('button');
+            button.innerText = buttons[i];
+            button.style.width = '50px';
+            button.style.height = '50px';
+
+            button.addEventListener('click', handleClick);
+            calc.appendChild(button);
+        }
+
+    })();
+</script>
 </body>
+</html>
